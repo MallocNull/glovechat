@@ -1,2 +1,2 @@
 # glovechat
-sock chat v2
+did you honestly think it was over
