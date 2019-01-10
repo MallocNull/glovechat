@@ -18,7 +18,20 @@
   typedef pthread_mutex_t glv_mutex_t;
 #endif
 
-glv_thread_t* glv_thread_create();
+#include <stdlib.h>
+typedef void(*glv_func_t)(void*);
+
+glv_thread_t* glv_thread_create(glv_func_t func, void* args);
+void glv_thread_join(glv_thread_t* thread);
 void glv_thread_destroy(glv_thread_t* thread);
+
+/** END THREAD DECLS **/
+/**********************/
+/** BEGIN MUTX DECLS **/
+
+glv_mutex_t* glv_mutex_create();
+void glv_mutex_lock(glv_mutex_t* mutex);
+void glv_mutex_unlock(glv_mutex_t* mutex);
+void glv_mutex_destroy(glv_mutex_t* mutex);
 
 #endif
