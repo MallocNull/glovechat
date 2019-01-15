@@ -27,9 +27,13 @@
 #endif
 
 #include <stdint.h>
+#include "util/ipaddr.h"
 
 #define GLV_TCP_FLAG_TYPE   1
 #define GLV_TCP_FLAG_NBIO   2
+
+#define GLV_TCP_RECV_APPEND 1
+#define GLV_TCP_RECV_BLOCK  2
 
 typedef struct {
     glv_sock_t socket;
@@ -40,8 +44,15 @@ typedef struct {
 glv_tcp_t* glv_tcp_create_server();
 glv_tcp_t* glv_tcp_create_client();
 
+int glv_tcp_send(glv_tcp_t* sock, char* data, unsigned int length);
+int glv_tcp_recv(glv_tcp_t* sock, char* data, unsigned int length, int flags);
 
+int glv_tcp_data_ready(glv_tcp_t* sock);
+int glv_tcp_is_open(glv_tcp_t* sock);
+int glv_tcp_is_secure(glv_tcp_t* sock);
 
-void glv_tcp_destroy(glv_tcp_t* socket);
+ipaddr_t glv_tcp_get_ip(glv_tcp_t* sock);
+
+void glv_tcp_destroy(glv_tcp_t* sock);
 
 #endif

@@ -11,7 +11,8 @@ find_package(OpenSSL)
 
 add_executable(server ${server_src})
 target_include_directories(server
-    PRIVATE ${OPENSSL_INCLUDE_DIR})
+    PRIVATE ${OPENSSL_INCLUDE_DIR}
+    PRIVATE ${PROJECT_SOURCE_DIR}/src/server)
 target_link_libraries(server ${OPENSSL_LIBRARIES})
 install(TARGETS server RUNTIME DESTINATION bin/server)
 
