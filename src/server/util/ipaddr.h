@@ -1,20 +1,26 @@
 #ifndef GLV_UTIL_IPADDR_H
 #define GLV_UTIL_IPADDR_H
 
+#include "util/string.h"
+#include <string.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 typedef struct {
-    uint8_t addr[16];
+    uint16_t addr[8];
     uint8_t cidr;
 } ipaddr_t;
 
-ipaddr_t glv_ip_aton(char* addr, int length);
-ipaddr_t glv_ip_raw(uint8_t* addr, uint8_t cidr);
+ipaddr_t glv_ip_aton(const char* addr);
+ipaddr_t glv_ip_raw(const uint16_t* addr, uint8_t cidr);
+int glv_ip_check(const char* addr);
 
-int glv_ip_compare(ipaddr_t* lhs, ipaddr_t* rhs);
-int glv_ip_identical(ipaddr_t* lhs, ipaddr_t* rhs);
-int glv_ip_isv4(ipaddr_t* addr);
+int glv_ip_compare(const ipaddr_t* lhs, const ipaddr_t* rhs);
+int glv_ip_identical(const ipaddr_t* lhs, const ipaddr_t* rhs);
+int glv_ip_isv4(const ipaddr_t* addr);
+int glv_ip_valid(const ipaddr_t* addr);
 
-int glv_ip_ntoa(ipaddr_t* addr, char* out);
+int glv_ip_ntoa(const ipaddr_t* addr, char* out);
+int glv_ipv6_ntoa(const ipaddr_t* addr, char* out);
 
 #endif

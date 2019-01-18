@@ -44,7 +44,7 @@ typedef struct {
 glv_tcp_t* glv_tcp_create_server();
 glv_tcp_t* glv_tcp_create_client();
 
-int glv_tcp_send(glv_tcp_t* sock, char* data, unsigned int length);
+int glv_tcp_send(glv_tcp_t* sock, const char* data, unsigned int length);
 int glv_tcp_recv(glv_tcp_t* sock, char* data, unsigned int length, int flags);
 
 int glv_tcp_data_ready(glv_tcp_t* sock);
