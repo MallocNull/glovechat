@@ -3,7 +3,7 @@
 
 #include <string.h>
 
-int hatoi(const char* str);
+int axtoi(const char* str);
 int strcnt(const char* str, char c);
 
 #endif

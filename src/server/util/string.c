@@ -1,6 +1,6 @@
 #include "string.h"
 
-int hatoi(const char* str) {
+int axtoi(const char* str) {
     int value = 0, i;
     for(i = 0; i < strlen(str); ++i) {
         value *= 16;

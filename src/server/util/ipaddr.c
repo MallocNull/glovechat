@@ -3,10 +3,10 @@
 const ipaddr_t error_addr = {{0, 0, 0, 0, 0, 0, 0, 0}, -1};
 
 ipaddr_t glv_ip_aton(const char* addr) {
-    ipaddr_t addr_out = {{0, 0, 0, 0, 0, 0, 0, 0}, 0};
-    char token[5] = {0, 0, 0, 0, 0};
     const int length = strlen(addr);
-    int i, j = 0, k = 0, tmp;
+    ipaddr_t addr_out = {{0, 0, 0, 0, 0, 0, 0, 0}, 128};
+    char token[5] = {0, 0, 0, 0, 0};
+    int i, j = 0, k = 0, cidr = 0, gap = -1, valid, tmp;
 
     if(strchr(addr, ':') != NULL && strchr(addr, '.') != NULL)
         return error_addr;
@@ -21,7 +21,17 @@ ipaddr_t glv_ip_aton(const char* addr) {
         for(i = 0; i < length; ++i) {
             if(addr[i] == ' ')
                 continue;
-            else if(addr[i] == '.' || addr[i] == '/' || i == length - 1) {
+            valid = 0;
+
+            if(isdigit(addr[i])) {
+                valid = 1;
+                if(j == 3)
+                    return error_addr;
+                token[j++] = addr[i];
+            }
+
+            if(addr[i] == '.' || addr[i] == '/' || i == length - 1) {
+                valid = 1;
                 if(j == 0)
                     return error_addr;
 
@@ -37,23 +47,71 @@ ipaddr_t glv_ip_aton(const char* addr) {
                 } else {
                     if(tmp > 32)
                         return error_addr;
-                    addr_out.cidr = tmp;
+                    addr_out.cidr = tmp + 96;
                 }
 
                 if(addr[i] == '/' && k != 4)
                     return error_addr;
-            } else if(addr[i] >= '0' && addr[i] <= '9') {
-                if(j == 3)
-                    return error_addr;
-                token[j++] = addr[i];
-            } else
+            }
+
+            if(!valid)
                 return error_addr;
         }
     } else {
         if(strcnt(addr, ':') > 7)
             return error_addr;
 
+        for(i = 0; i < length; ++i) {
+            if(addr[i] == ' ')
+                continue;
+            valid = 0;
 
+            if((isxdigit(addr[i]) && !cidr) || (isdigit(addr[i]) && cidr)) {
+                valid = 1;
+                if(j == 4)
+                    return error_addr;
+                token[j++] = addr[i];
+            }
+
+            if(addr[i] == ':' || addr[i] == '/' || i == length - 1) {
+                valid = 1;
+                if(j == 0 && !(k == 0 && i != length - 1 && addr[i + 1] == ':'))
+                    return error_addr;
+
+                token[j] = 0;
+                tmp = cidr ? atoi(token) : axtoi(token);
+
+                if(cidr) {
+                    if(tmp > 128)
+                        return error_addr;
+                    addr_out.cidr = tmp;
+                } else {
+                    addr_out.addr[k] = tmp;
+                    j = 0;
+                    ++k;
+                }
+
+                if(addr[i] == '/')
+                    cidr = 1;
+                if(addr[i] == ':') {
+                    if(cidr)
+                        return error_addr;
+                    if(i == length - 1)
+                        return error_addr;
+                    if(addr[i + 1] == ':') {
+                        if(gap == -1) {
+                            ++i;
+                            gap = k - 1;
+                            continue;
+                        } else
+                            return error_addr;
+                    }
+                }
+            }
+
+            if(!valid)
+                return error_addr;
+        }
     }
 
     return addr_out;
