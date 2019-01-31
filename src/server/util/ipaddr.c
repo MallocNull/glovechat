@@ -1,5 +1,8 @@
 #include "ipaddr.h"
 
+#define MAX(X,Y) (((X)>(Y))?(X):(Y))
+#define MIN(X,Y) (((X)<(Y))?(X):(Y))
+
 const ipaddr_t error_addr = {{0, 0, 0, 0, 0, 0, 0, 0}, -1};
 
 ipaddr_t glv_ip_aton(const char* addr) {
@@ -135,6 +138,45 @@ ipaddr_t glv_ip_raw(const uint16_t* addr, uint8_t cidr) {
     addr_out.cidr = cidr;
 
     return addr_out;
+}
+
+int glv_ip_check(const char* addr) {
+    ipaddr_t test = glv_ip_aton(addr);
+    return glv_ip_valid(&test);
+}
+
+int glv_ip_compare(const ipaddr_t* lhs, const ipaddr_t* rhs) {
+    int i = 0, lhs_cidr = lhs->cidr, rhs_cidr = rhs->cidr, mask;
+    for(i = 0; i < 8; ++i) {
+        mask = 0xFFFF
+             & ~((1 << (16 - MIN(16, lhs_cidr))) - 1)
+             & ~((1 << (16 - MIN(16, rhs_cidr))) - 1);
+        if(mask == 0)
+            break;
+
+        if((lhs->addr[i] & mask) != (rhs->addr[i] & mask))
+            return 0;
+
+        lhs_cidr = MAX(0, lhs_cidr - 16);
+        rhs_cidr = MAX(0, rhs_cidr - 16);
+    }
+
+    return 1;
+}
+
+int glv_ip_identical(const ipaddr_t* lhs, const ipaddr_t* rhs) {
+    int i;
+    for(i = 0; i < 8; ++i)
+        if(lhs->addr[i] != rhs->addr[i])
+            return 0;
+
+    return 1;
+}
+
+int glv_ip_isv4(const ipaddr_t* addr) {
+    return addr->addr[0] == 0 && addr->addr[1] == 0 &&
+           addr->addr[2] == 0 && addr->addr[3] == 0 &&
+           addr->addr[4] == 0 && addr->addr[5] == 0xFFFF;
 }
 
 int glv_ip_valid(const ipaddr_t* addr) {

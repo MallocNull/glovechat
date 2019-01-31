@@ -1,11 +1,12 @@
 #ifndef GLV_UTIL_IPADDR_H
 #define GLV_UTIL_IPADDR_H
 
-#include "util/string.h"
 #include <string.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <ctype.h>
+
+#include "util/string.h"
 
 typedef struct {
     uint16_t addr[8];
