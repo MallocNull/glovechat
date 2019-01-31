@@ -182,3 +182,14 @@ int glv_ip_isv4(const ipaddr_t* addr) {
 int glv_ip_valid(const ipaddr_t* addr) {
     return addr->cidr == -1;
 }
+
+char* glv_ip_ntoa(const ipaddr_t* addr) {
+    if(!glv_ip_isv4(addr))
+        return glv_ipv6_ntoa(addr);
+
+    
+}
+
+char* glv_ipv6_ntoa(const ipaddr_t* addr) {
+
+}

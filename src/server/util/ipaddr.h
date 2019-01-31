@@ -22,7 +22,7 @@ int glv_ip_identical(const ipaddr_t* lhs, const ipaddr_t* rhs);
 int glv_ip_isv4(const ipaddr_t* addr);
 int glv_ip_valid(const ipaddr_t* addr);
 
-int glv_ip_ntoa(const ipaddr_t* addr, char* out);
-int glv_ipv6_ntoa(const ipaddr_t* addr, char* out);
+char* glv_ip_ntoa(const ipaddr_t* addr);
+char* glv_ipv6_ntoa(const ipaddr_t* addr);
 
 #endif
