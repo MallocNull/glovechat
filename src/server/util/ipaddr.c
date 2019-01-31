@@ -6,7 +6,7 @@ ipaddr_t glv_ip_aton(const char* addr) {
     const int length = strlen(addr);
     ipaddr_t addr_out = {{0, 0, 0, 0, 0, 0, 0, 0}, 128};
     char token[5] = {0, 0, 0, 0, 0};
-    int i, j = 0, k = 0, cidr = 0, gap = -1, valid, tmp;
+    int i, j = 0, k = 0, cidr = 0, gap = -2, valid, tmp;
 
     if(strchr(addr, ':') != NULL && strchr(addr, '.') != NULL)
         return error_addr;
@@ -75,8 +75,13 @@ ipaddr_t glv_ip_aton(const char* addr) {
 
             if(addr[i] == ':' || addr[i] == '/' || i == length - 1) {
                 valid = 1;
-                if(j == 0 && !(k == 0 && i != length - 1 && addr[i + 1] == ':'))
+                if  (j == 0 &&
+                   !(k == 0 && i != length - 1 && addr[i + 1] == ':') &&
+                   !(i - 2 >= 0 && addr[i] == '/' &&
+                     addr[i - 1] == ':' && addr[i - 2] == ':'))
+                {
                     return error_addr;
+                }
 
                 token[j] = 0;
                 tmp = cidr ? atoi(token) : axtoi(token);
@@ -85,7 +90,7 @@ ipaddr_t glv_ip_aton(const char* addr) {
                     if(tmp > 128)
                         return error_addr;
                     addr_out.cidr = tmp;
-                } else {
+                } else if(j != 0) {
                     addr_out.addr[k] = tmp;
                     j = 0;
                     ++k;
@@ -99,7 +104,7 @@ ipaddr_t glv_ip_aton(const char* addr) {
                     if(i == length - 1)
                         return error_addr;
                     if(addr[i + 1] == ':') {
-                        if(gap == -1) {
+                        if(gap == -2) {
                             ++i;
                             gap = k - 1;
                             continue;
@@ -111,6 +116,13 @@ ipaddr_t glv_ip_aton(const char* addr) {
 
             if(!valid)
                 return error_addr;
+        }
+
+        if(gap > -2) {
+            for(i = k - 1; i > gap; --i) {
+                addr_out.addr[7 - (k - 1 - i)] = addr_out.addr[i];
+                addr_out.addr[i] = 0;
+            }
         }
     }
 
