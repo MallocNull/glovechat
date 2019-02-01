@@ -215,10 +215,10 @@ char* glv_ipv6_ntoa(const ipaddr_t* addr) {
         return NULL;
 
     char* ip = malloc(43 * sizeof(char));
-    int i, largest_gap_pos = -1, largest_gap_len = 0, curr_gap_len = 0;
+    int i, jmp = 0, largest_gap_pos = -1, largest_gap_len = 0, curr_gap_len = 0;
 
     for(i = 0; i < 8; ++i) {
-        if(addr->addr[i] == 0)
+        if(addr->addr[i] == 0 && i < 7)
             ++curr_gap_len;
         else {
             if(curr_gap_len > largest_gap_len && curr_gap_len > 1) {
@@ -231,14 +231,13 @@ char* glv_ipv6_ntoa(const ipaddr_t* addr) {
     }
 
     for(i = 0; i < 8; ++i) {
-        if(i == 7)
-            sprintf(ip, "%s%x", ip, addr->addr[i]);
-        else {
-            if(i == largest_gap_pos) {
-                sprintf(ip, "%s:", ip);
-                i += largest_gap_len - 1;
-            } else
-                sprintf(ip, "%s%x:", ip, addr->addr[i]);
+        if(i == largest_gap_pos) {
+            sprintf(ip, (i == 0 ? "::" : "%s:") , ip);
+            i += largest_gap_len - 1;
+            jmp = 1;
+        } else if(!(jmp && i == 7)) {
+            sprintf(ip, (i == 7 ? "%s%x" : "%s%x:"), ip, addr->addr[i]);
+            jmp = 0;
         }
     }
 
