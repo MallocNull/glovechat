@@ -180,16 +180,70 @@ int glv_ip_isv4(const ipaddr_t* addr) {
 }
 
 int glv_ip_valid(const ipaddr_t* addr) {
-    return addr->cidr == -1;
+    return addr->cidr <= 128;
 }
 
 char* glv_ip_ntoa(const ipaddr_t* addr) {
     if(!glv_ip_isv4(addr))
         return glv_ipv6_ntoa(addr);
+    if(!glv_ip_valid(addr))
+        return NULL;
 
-    
+    char* ip = malloc(18 * sizeof(char));
+    if(addr->cidr == 128) {
+        sprintf(ip, "%i.%i.%i.%i",
+            (addr->addr[6] >> 8) & 0xFF,
+            (addr->addr[6])      & 0xFF,
+            (addr->addr[7] >> 8) & 0xFF,
+            (addr->addr[7])      & 0xFF
+        );
+    } else {
+        sprintf(ip, "%i.%i.%i.%i/%i",
+            (addr->addr[6] >> 8) & 0xFF,
+            (addr->addr[6])      & 0xFF,
+            (addr->addr[7] >> 8) & 0xFF,
+            (addr->addr[7])      & 0xFF,
+            (addr->cidr - 96)
+        );
+    }
+
+    return ip;
 }
 
 char* glv_ipv6_ntoa(const ipaddr_t* addr) {
+    if(!glv_ip_valid(addr))
+        return NULL;
 
+    char* ip = malloc(43 * sizeof(char));
+    int i, largest_gap_pos = -1, largest_gap_len = 0, curr_gap_len = 0;
+
+    for(i = 0; i < 8; ++i) {
+        if(addr->addr[i] == 0)
+            ++curr_gap_len;
+        else {
+            if(curr_gap_len > largest_gap_len && curr_gap_len > 1) {
+                largest_gap_len = curr_gap_len;
+                largest_gap_pos = i - curr_gap_len;
+            }
+
+            curr_gap_len = 0;
+        }
+    }
+
+    for(i = 0; i < 8; ++i) {
+        if(i == 7)
+            sprintf(ip, "%s%x", ip, addr->addr[i]);
+        else {
+            if(i == largest_gap_pos) {
+                sprintf(ip, "%s:", ip);
+                i += largest_gap_len - 1;
+            } else
+                sprintf(ip, "%s%x:", ip, addr->addr[i]);
+        }
+    }
+
+    if(addr->cidr < 128)
+        sprintf(ip, "%s/%i", ip, addr->cidr);
+
+    return ip;
 }
