@@ -2,17 +2,17 @@ cmake_minimum_required(VERSION 3.7)
 set(CMAKE_C_STANDARD 99)
 project(glovechat C)
 
-file(GLOB_RECURSE server_src
-    "src/server/*.h"
-    "src/server/*.c"
+file(GLOB_RECURSE glv_src
+    "src/*.h"
+    "src/*.c"
 )
 
 find_package(OpenSSL)
 
-add_executable(server ${server_src})
+add_executable(server ${glv_src})
 target_include_directories(server
     PRIVATE ${OPENSSL_INCLUDE_DIR}
-    PRIVATE ${PROJECT_SOURCE_DIR}/src/server)
+    PRIVATE ${PROJECT_SOURCE_DIR}/src)
 target_link_libraries(server ${OPENSSL_LIBRARIES})
 install(TARGETS server RUNTIME DESTINATION bin/server)
 
