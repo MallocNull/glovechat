@@ -27,10 +27,16 @@
 #endif
 
 #include <stdint.h>
+
+#include <openssl/ssl.h>
+#include <openssl/err.h>
+
 #include "util/ipaddr.h"
+#include "util/thread.h"
 
 #define GLV_TCP_FLAG_TYPE   1
-#define GLV_TCP_FLAG_NBIO   2
+#define GLV_TCP_FLAG_TLS    2
+#define GLV_TCP_FLAG_NBIO   4
 
 #define GLV_TCP_RECV_APPEND 1
 #define GLV_TCP_RECV_BLOCK  2
@@ -41,7 +47,7 @@ typedef struct {
     uint32_t flags;
 } glv_tcp_t;
 
-glv_tcp_t* glv_tcp_create_server();
+glv_tcp_t* glv_tcp_create_server(uint16_t port);
 glv_tcp_t* glv_tcp_create_client();
 
 int glv_tcp_send(glv_tcp_t* sock, const char* data, unsigned int length);
