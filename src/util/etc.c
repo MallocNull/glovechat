@@ -1,4 +1,5 @@
-#include "string.h"
+#include "etc.h"
+#include <string.h>
 
 int axtoi(const char* str) {
     int value = 0, i;

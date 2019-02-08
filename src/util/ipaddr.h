@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-#include "util/string.h"
+#include "util/etc.h"
 
 typedef struct {
     uint16_t addr[8];

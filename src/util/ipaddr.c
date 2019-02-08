@@ -1,8 +1,5 @@
 #include "ipaddr.h"
 
-#define MAX(X,Y) (((X)>(Y))?(X):(Y))
-#define MIN(X,Y) (((X)<(Y))?(X):(Y))
-
 const ipaddr_t error_addr = {{0, 0, 0, 0, 0, 0, 0, 0}, -1};
 
 ipaddr_t glv_ip_aton(const char* addr) {
