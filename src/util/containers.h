@@ -24,7 +24,8 @@ glv_map_t* glv_map_create_ex(int initial_size);
 void* glv_map_get(glv_map_t* map, const char* key);
 
 void* glv_map_set(glv_map_t* map, const char* key, void* value);
-void* glv_map_set_copy(glv_map_t* map, const char* key, void* value);
+void* glv_map_set_copy
+    (glv_map_t* map, const char* key, void* value, size_t length);
 
 void* glv_map_remove(glv_map_t* map, const char* key);
 void glv_map_remove_dealloc(glv_map_t* map, const char* key);

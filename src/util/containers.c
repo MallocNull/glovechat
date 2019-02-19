@@ -40,6 +40,7 @@ void* glv_map_set(glv_map_t* map, const char* key, void* value) {
         return NULL;
 
     int hash = glv_map_hash_func(key), i;
+    char* copy;
     void* tmp;
 
     if(glv_map_has_key(map, key)) {
@@ -52,7 +53,40 @@ void* glv_map_set(glv_map_t* map, const char* key, void* value) {
             }
         }
     } else {
-        
+        if(map->pair_count + 1 > map->bucket_count * 2)
+            glv_map_resize(map, map->bucket_count * 2);
+
+        hash = hash % map->bucket_count;
+
+        map->buckets[hash] =
+            realloc(map->buckets[hash], ++(map->bucket_lengths[hash]));
+        copy = malloc((strlen(key) + 1) * sizeof(char));
+        strcpy(copy, key);
+
+        map->buckets[hash][map->bucket_lengths[hash] - 1].key = copy;
+        map->buckets[hash][map->bucket_lengths[hash] - 1].value = value;
+        ++(map->pair_count);
+    }
+
+    return NULL;
+}
+
+void* glv_map_set_copy
+    (glv_map_t* map, const char* key, void* value, size_t length)
+{
+    void* copy = malloc(length);
+    memcpy(copy, value, length);
+
+    return glv_map_set(map, key, copy);
+}
+
+void* glv_map_remove(glv_map_t* map, const char* key) {
+    int hash = glv_map_hash_func(key) % map->bucket_count, i;
+
+    for(i = 0; i < map->bucket_lengths[hash]; ++i) {
+        if(strcmp(map->buckets[hash][i].key, key) == 0) {
+
+        }
     }
 
     return NULL;
