@@ -29,7 +29,8 @@ void* glv_map_get(glv_map_t* map, const char* key) {
     int hash = glv_map_hash_func(key) % map->bucket_count, i;
 
     for(i = 0; i < map->bucket_lengths[hash]; ++i)
-        if(strcmp(map->buckets[hash][i].key, key) == 0)
+        if(map->buckets[hash][i].key != NULL &&
+           strcmp(map->buckets[hash][i].key, key) == 0)
             return map->buckets[hash][i].value;
 
     return NULL;
@@ -40,6 +41,7 @@ void* glv_map_set(glv_map_t* map, const char* key, void* value) {
         return NULL;
 
     int hash = glv_map_hash_func(key), i;
+    glv_pair_t* pair;
     char* copy;
     void* tmp;
 
@@ -82,10 +84,16 @@ void* glv_map_set_copy
 
 void* glv_map_remove(glv_map_t* map, const char* key) {
     int hash = glv_map_hash_func(key) % map->bucket_count, i;
+    void* value;
 
     for(i = 0; i < map->bucket_lengths[hash]; ++i) {
-        if(strcmp(map->buckets[hash][i].key, key) == 0) {
+        if(map->buckets[hash][i].key != NULL &&
+           strcmp(map->buckets[hash][i].key, key) == 0)
+        {
+            free(map->buckets[hash][i].key);
+            value = map->buckets[hash][i].value;
 
+            return value;
         }
     }
 
@@ -103,6 +111,9 @@ void glv_map_resize(glv_map_t* map, int size) {
 
     for(i = 0; i < map->bucket_count; ++i) {
         for(j = 0; j < map->bucket_lengths[i]; ++j) {
+            if(map->buckets[i][j].key == NULL)
+                continue;
+
             hash = glv_map_hash_func(map->buckets[i][j].key) % size;
             new_buckets[hash] =
                 realloc(new_buckets[hash], ++(new_lengths[hash]));
