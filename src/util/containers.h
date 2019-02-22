@@ -29,6 +29,7 @@ void* glv_map_set_copy
 
 void* glv_map_remove(glv_map_t* map, const char* key);
 void glv_map_remove_dealloc(glv_map_t* map, const char* key);
+void glv_map_remove_dealloc_func(glv_map_t* map, const char* key,);
 
 void glv_map_clear(glv_map_t* map);
 void glv_map_clear_dealloc(glv_map_t* map);
@@ -38,6 +39,7 @@ void glv_map_resize(glv_map_t* map, int size);
 
 void glv_map_destroy(glv_map_t* map);
 void glv_map_destroy_dealloc(glv_map_t* map);
+void glv_map_destroy_dealloc_func(glv_map_t* map, );
 
 /** STRING HASHMAP END **/
 
