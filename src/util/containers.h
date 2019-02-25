@@ -18,6 +18,8 @@ typedef struct {
     int pair_count;
 } glv_map_t;
 
+typedef void (*glv_map_dealloc_func)(void*);
+
 glv_map_t* glv_map_create();
 glv_map_t* glv_map_create_ex(int initial_size);
 
@@ -29,17 +31,13 @@ void* glv_map_set_copy
 
 void* glv_map_remove(glv_map_t* map, const char* key);
 void glv_map_remove_dealloc(glv_map_t* map, const char* key);
-void glv_map_remove_dealloc_func(glv_map_t* map, const char* key,);
-
-void glv_map_clear(glv_map_t* map);
-void glv_map_clear_dealloc(glv_map_t* map);
 
 int glv_map_has_key(glv_map_t* map, const char* key);
 void glv_map_resize(glv_map_t* map, int size);
 
 void glv_map_destroy(glv_map_t* map);
 void glv_map_destroy_dealloc(glv_map_t* map);
-void glv_map_destroy_dealloc_func(glv_map_t* map, );
+void glv_map_destroy_dealloc_func(glv_map_t* map, glv_map_dealloc_func func);
 
 /** STRING HASHMAP END **/
 

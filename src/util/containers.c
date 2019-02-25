@@ -19,6 +19,7 @@ glv_map_t* glv_map_create() {
 glv_map_t* glv_map_create_ex(int initial_size) {
     glv_map_t* map = malloc(sizeof(glv_map_t));
     map->buckets = NULL;
+    map->bucket_lengths = NULL;
     map->pair_count = 0;
 
     glv_map_resize(map, initial_size);
@@ -137,9 +138,37 @@ void glv_map_resize(glv_map_t* map, int size) {
     }
 
     free(map->buckets);
+    free(map->bucket_lengths);
+
     map->buckets = new_buckets;
     map->bucket_lengths = new_lengths;
     map->bucket_count = size;
+}
+
+void glv_map_destroy(glv_map_t* map) {
+    glv_map_destroy_dealloc_func(map, NULL);
+}
+
+void glv_map_destroy_dealloc(glv_map_t* map) {
+    glv_map_destroy_dealloc_func(map, free);
+}
+
+void glv_map_destroy_dealloc_func(glv_map_t* map, glv_map_dealloc_func func) {
+    int i, j;
+
+    for(i = 0; i < map->bucket_count; ++i) {
+        for(j = 0; j < map->bucket_lengths[i]; ++j) {
+            free(map->buckets[i][j].key);
+            if(func != NULL)
+                func(map);
+        }
+
+        free(map->buckets[i]);
+    }
+
+    free(map->buckets);
+    free(map->bucket_lengths);
+    free(map);
 }
 
 /** STRING HASHMAP END **/
