@@ -9,7 +9,7 @@ struct {
 } _ssl_ctx;
 
 static int ssl_init() {
-    static int is_inited = 0;
+    /*static int is_inited = 0;
     if(is_inited)
         return 1;
 
@@ -31,5 +31,5 @@ static int ssl_init() {
     success |= SSL_CTX_use_certificate_file(
         _ssl_ctx.server,
 
-    );
+    );*/
 }

@@ -89,6 +89,7 @@ void* glv_map_set(glv_map_t* map, const char* key, void* value) {
 void* glv_map_set_copy
     (glv_map_t* map, const char* key, void* value, size_t length)
 {
+    length = (length == 0 ? strlen(value) + 1 : length);
     void* copy = malloc(length);
     memcpy(copy, value, length);
 
