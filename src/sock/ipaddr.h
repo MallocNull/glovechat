@@ -1,5 +1,5 @@
-#ifndef GLV_UTIL_IPADDR_H
-#define GLV_UTIL_IPADDR_H
+#ifndef GLV_SOCK_IPADDR_H
+#define GLV_SOCK_IPADDR_H
 
 #include <stdio.h>
 #include <string.h>

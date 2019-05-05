@@ -4,15 +4,16 @@
 
 #define GLV_MAP_DEFAULT_BUCKETS 8
 
-static int glv_map_hash_func(const char* key) {
-    int hash = 7, length = strlen(key), i;
+static uint32_t glv_map_hash_func(const char* key) {
+    uint32_t hash = 7;
+    size_t length = strlen(key), i;
+
     for(i = 0; i < length; ++i)
         hash = hash * 31 + key[i];
-
     return hash;
 }
 
-glv_map_t* glv_map_create() {
+glv_map_t* glv_map_create(void) {
     return glv_map_create_ex(GLV_MAP_DEFAULT_BUCKETS);
 }
 
@@ -27,7 +28,7 @@ glv_map_t* glv_map_create_ex(int initial_size) {
 }
 
 void* glv_map_get(glv_map_t* map, const char* key) {
-    int hash = glv_map_hash_func(key) % map->bucket_count, i;
+    uint32_t hash = glv_map_hash_func(key) % map->bucket_count, i;
 
     for(i = 0; i < map->bucket_lengths[hash]; ++i)
         if(map->buckets[hash][i].key != NULL &&
@@ -41,9 +42,8 @@ void* glv_map_set(glv_map_t* map, const char* key, void* value) {
     if(value == NULL)
         return NULL;
 
-    int hash = glv_map_hash_func(key), i;
+    uint32_t hash = glv_map_hash_func(key), i;
     glv_pair_t* pair = NULL;
-    char* copy;
     void* tmp;
 
     if(glv_map_has_key(map, key)) {
@@ -75,10 +75,7 @@ void* glv_map_set(glv_map_t* map, const char* key, void* value) {
             pair = &(map->buckets[hash][map->bucket_lengths[hash] - 1]);
         }
 
-        copy = malloc((strlen(key) + 1) * sizeof(char));
-        strcpy(copy, key);
-
-        pair->key = copy;
+        pair->key = strdup(key);
         pair->value = value;
         ++(map->pair_count);
     }
@@ -89,6 +86,7 @@ void* glv_map_set(glv_map_t* map, const char* key, void* value) {
 void* glv_map_set_copy
     (glv_map_t* map, const char* key, void* value, size_t length)
 {
+
     length = (length == 0 ? strlen(value) + 1 : length);
     void* copy = malloc(length);
     memcpy(copy, value, length);
@@ -96,8 +94,18 @@ void* glv_map_set_copy
     return glv_map_set(map, key, copy);
 }
 
+void glv_map_setf(glv_map_t* map, const char* key, void* value) {
+    free(glv_map_set(map, key, value));
+}
+
+void glv_map_setf_copy
+    (glv_map_t* map, const char* key, void* value, size_t length)
+{
+    free(glv_map_set_copy(map, key, value, length));
+}
+
 void* glv_map_remove(glv_map_t* map, const char* key) {
-    int hash = glv_map_hash_func(key) % map->bucket_count, i;
+    uint32_t hash = glv_map_hash_func(key) % map->bucket_count, i;
     for(i = 0; i < map->bucket_lengths[hash]; ++i) {
         if(map->buckets[hash][i].key != NULL &&
            strcmp(map->buckets[hash][i].key, key) == 0)
@@ -111,18 +119,18 @@ void* glv_map_remove(glv_map_t* map, const char* key) {
     return NULL;
 }
 
-void glv_map_remove_dealloc(glv_map_t* map, const char* key) {
+void glv_map_removef(glv_map_t* map, const char* key) {
     free(glv_map_remove(map, key));
 }
 
 int glv_map_has_key(glv_map_t* map, const char* key) {
-    return glv_map_get(map, key) == NULL;
+    return glv_map_get(map, key) != NULL;
 }
 
 void glv_map_resize(glv_map_t* map, int size) {
     glv_pair_t** new_buckets = calloc(size, sizeof(glv_pair_t*));
     int* new_lengths = calloc(size, sizeof(int));
-    int i, j, hash;
+    uint32_t i, j, hash;
 
     for(i = 0; i < map->bucket_count; ++i) {
         for(j = 0; j < map->bucket_lengths[i]; ++j) {
@@ -147,21 +155,24 @@ void glv_map_resize(glv_map_t* map, int size) {
 }
 
 void glv_map_destroy(glv_map_t* map) {
-    glv_map_destroy_dealloc_func(map, NULL);
+    glv_map_destroyf_func(map, NULL);
 }
 
-void glv_map_destroy_dealloc(glv_map_t* map) {
-    glv_map_destroy_dealloc_func(map, free);
+void glv_map_destroyf(glv_map_t* map) {
+    glv_map_destroyf_func(map, free);
 }
 
-void glv_map_destroy_dealloc_func(glv_map_t* map, glv_map_dealloc_func func) {
+void glv_map_destroyf_func(glv_map_t* map, glv_map_dealloc_func func) {
     int i, j;
+
+    if(map == NULL)
+        return;
 
     for(i = 0; i < map->bucket_count; ++i) {
         for(j = 0; j < map->bucket_lengths[i]; ++j) {
             free(map->buckets[i][j].key);
             if(func != NULL)
-                func(map);
+                func(map->buckets[i][j].value);
         }
 
         free(map->buckets[i]);

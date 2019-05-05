@@ -29,7 +29,7 @@ void glv_thread_destroy(glv_thread_t* thread);
 /**********************/
 /** BEGIN MUTX DECLS **/
 
-glv_mutex_t* glv_mutex_create();
+glv_mutex_t* glv_mutex_create(void);
 void glv_mutex_lock(glv_mutex_t* mutex);
 void glv_mutex_unlock(glv_mutex_t* mutex);
 void glv_mutex_destroy(glv_mutex_t* mutex);

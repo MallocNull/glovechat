@@ -31,7 +31,7 @@
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 
-#include "util/ipaddr.h"
+#include "ipaddr.h"
 #include "util/thread.h"
 
 #define GLV_TCP_FLAG_TYPE   1

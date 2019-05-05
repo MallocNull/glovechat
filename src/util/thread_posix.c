@@ -37,7 +37,7 @@ void glv_thread_destroy(glv_thread_t* thread) {
 /*********************/
 /** BEGIN MUTX IMPL **/
 
-glv_mutex_t* glv_mutex_create() {
+glv_mutex_t* glv_mutex_create(void) {
     glv_mutex_t* mtx = malloc(sizeof(glv_mutex_t));
     if(pthread_mutex_init(mtx, NULL) == 0)
         return mtx;
