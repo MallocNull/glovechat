@@ -1,3 +1,4 @@
+#include <conf/conf.h>
 #include "tcp.h"
 
 struct {
@@ -8,8 +9,8 @@ struct {
     glv_mutex_t client_mtx;
 } _ssl_ctx;
 
-static int ssl_init() {
-    /*static int is_inited = 0;
+static int glv_ssl_init() {
+    static int is_inited = 0;
     if(is_inited)
         return 1;
 
@@ -30,6 +31,21 @@ static int ssl_init() {
     int success = 0;
     success |= SSL_CTX_use_certificate_file(
         _ssl_ctx.server,
+        glv_ini_get(_config.global, "SSL", "Certificate"),
+        SSL_FILETYPE_PEM
+    );
+    success |= SSL_CTX_use_PrivateKey_file(
+        _ssl_ctx.server,
+        glv_ini_get(_config.global, "SSL", "Private Key"),
+        SSL_FILETYPE_PEM
+    );
 
-    );*/
+    if(success <= 0) {
+        SSL_CTX_free(_ssl_ctx.client);
+        SSL_CTX_free(_ssl_ctx.server);
+        return 0;
+    }
+
+    is_inited = 1;
+    return 1;
 }

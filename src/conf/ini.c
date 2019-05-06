@@ -1,7 +1,5 @@
 #include "ini.h"
 
-
-
 glv_ini_t* glv_ini_read_file(const char* path) {
     char *split, line[GLV_INI_MAX_LN + 1];
     glv_map_t* section = NULL;
@@ -21,7 +19,7 @@ glv_ini_t* glv_ini_read_file(const char* path) {
             continue;
 
         length = strlen(line);
-        if(length == GLV_INI_MAX_LN && line[length - 1] != '\n' && !feof(file))
+        if(length == GLV_INI_MAX_LN && !feof(file))
         {
             printf(GLV_ERR
                 "INI file '%s' has line that exceeds %i bytes.",
@@ -34,13 +32,13 @@ glv_ini_t* glv_ini_read_file(const char* path) {
         }
 
         if(line[0] == '[') {
-            if(line[length - 2] == ']') {
-                line[length - 2] = '\0';
+            if(line[length - 1] == ']') {
+                line[length - 1] = '\0';
                 strlower(trim(line + 1));
 
                 if(!glv_map_has_key(ini, line + 1)) {
                     section = glv_map_create();
-                    glv_map_set_copy(ini, line + 1, section, GLV_STRLEN);
+                    glv_map_set_copy(ini, line + 1, section, sizeof(glv_ini_t));
                 }
             } else {
                 printf(GLV_ERR
