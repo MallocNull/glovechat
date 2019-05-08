@@ -24,7 +24,7 @@ typedef void (*glv_map_dealloc_func)(void*);
 glv_map_t* glv_map_create(void);
 glv_map_t* glv_map_create_ex(int initial_size);
 
-void* glv_map_get(glv_map_t* map, const char* key);
+void* glv_map_get(const glv_map_t* map, const char* key);
 
 void* glv_map_set(glv_map_t* map, const char* key, void* value);
 void* glv_map_set_copy
@@ -37,7 +37,7 @@ void glv_map_setf_copy
 void* glv_map_remove(glv_map_t* map, const char* key);
 void glv_map_removef(glv_map_t* map, const char* key);
 
-int glv_map_has_key(glv_map_t* map, const char* key);
+int glv_map_has_key(const glv_map_t* map, const char* key);
 void glv_map_resize(glv_map_t* map, int size);
 
 void glv_map_destroy(glv_map_t* map);

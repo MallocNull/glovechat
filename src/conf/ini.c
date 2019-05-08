@@ -79,7 +79,7 @@ glv_ini_t* glv_ini_read_file(const char* path) {
     return ini;
 }
 
-int glv_ini_has_section(glv_ini_t* ini, const char* section) {
+int glv_ini_has_section(const glv_ini_t* ini, const char* section) {
     char* section_lc = strlower(strdup(section));
     int check = glv_map_has_key(ini, section_lc);
 
@@ -88,7 +88,7 @@ int glv_ini_has_section(glv_ini_t* ini, const char* section) {
 }
 
 int glv_ini_section_has_key
-    (glv_ini_t* ini, const char* section, const char* key)
+    (const glv_ini_t* ini, const char* section, const char* key)
 {
     char *section_lc = strlower(strdup(section)),
          *key_lc = strlower(strdup(key));
@@ -104,7 +104,7 @@ int glv_ini_section_has_key
     return check;
 }
 
-char* glv_ini_get(glv_ini_t* ini, const char* section, const char* key) {
+char* glv_ini_get(const glv_ini_t* ini, const char* section, const char* key) {
     char *section_lc = strlower(strdup(section)),
          *key_lc = strlower(strdup(key)),
          *value = NULL;
@@ -120,7 +120,8 @@ char* glv_ini_get(glv_ini_t* ini, const char* section, const char* key) {
 }
 
 int glv_ini_get_type
-    (glv_ini_t* ini, const char* section, const char* key, int type, void* out)
+    (const glv_ini_t* ini, const char* section,
+     const char* key, int type, void* out)
 {
     char *value = glv_ini_get(ini, section, key);
     if(value == NULL)
@@ -140,7 +141,11 @@ int glv_ini_get_type
         case GLV_INI_DOUBLE:
             *(double*)out = strtod(value, NULL);
             break;
+        default:
+            return 0;
     }
+
+    return 1;
 }
 
 void glv_ini_destroy(glv_ini_t* ini) {

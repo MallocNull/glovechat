@@ -27,7 +27,7 @@ glv_map_t* glv_map_create_ex(int initial_size) {
     return map;
 }
 
-void* glv_map_get(glv_map_t* map, const char* key) {
+void* glv_map_get(const glv_map_t* map, const char* key) {
     uint32_t hash = glv_map_hash_func(key) % map->bucket_count, i;
 
     for(i = 0; i < map->bucket_lengths[hash]; ++i)
@@ -123,7 +123,7 @@ void glv_map_removef(glv_map_t* map, const char* key) {
     free(glv_map_remove(map, key));
 }
 
-int glv_map_has_key(glv_map_t* map, const char* key) {
+int glv_map_has_key(const glv_map_t* map, const char* key) {
     return glv_map_get(map, key) != NULL;
 }
 
